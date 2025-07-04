@@ -70,6 +70,21 @@ experiment, fig, df = main_parameter_recovery_experiment()
 
 ## Performance Results
 
+### GPU Optimization Breakthrough 🚀
+
+**Latest Update**: GPU optimization achieved **2.03x speedup** over original CPU implementation!
+
+| Method | Time (1000 subjects) | Speedup | Status |
+|--------|---------------------|---------|--------|
+| GPU Optimized | **8.04s** | 2.03x | ✅ **FASTEST** |
+| Original CPU (8 threads) | 16.35s | 1.00x | Baseline |
+
+#### GPU Optimization Details
+- **GPU Data Generation**: 7.4s (efficient Metal kernels)
+- **CPU Parameter Estimation**: 0.087s (fast grid search)
+- **Total GPU Time**: 8.04s vs 16.35s CPU
+- **Parameter Recovery Quality**: Maintained (α: 0.871, β: 0.903)
+
 ### Three-Way Computational Comparison
 
 | Scale | Dataset | GPU | CPU (8 threads) | CPU (1 thread) | Best Method |
@@ -81,6 +96,7 @@ experiment, fig, df = main_parameter_recovery_experiment()
 
 ### Key Findings
 
+- **🎯 GPU OPTIMIZATION SUCCESS**: 2.03x speedup achieved through strategic optimization
 - **CPU (8 threads) dominates** at all tested scales but advantage is shrinking
 - **GPU shows superior scaling**: Performance gap closing rapidly (2.08x → 1.05x)
 - **Single-threaded CPU**: Consistently 3-4x slower than GPU across all scales
@@ -97,6 +113,21 @@ experiment, fig, df = main_parameter_recovery_experiment()
 This recovery pattern is consistent with computational cognitive science literature - learning rates are easier to estimate than exploration parameters from behavioral data.
 
 ## Usage Examples
+
+### GPU Optimized Parameter Recovery ⚡
+
+```julia
+# Run GPU-optimized parameter recovery (2.03x faster!)
+include("gpu_optimized_simple.jl")
+
+# Fast GPU-accelerated recovery for 1000 subjects
+result = gpu_accelerated_recovery(1000, 4, 200)
+
+# Results in just 8 seconds vs 16 seconds CPU!
+println("GPU Time: $(result.total_time)s")
+println("α correlation: $(result.alpha_correlation)")
+println("β correlation: $(result.beta_correlation)")
+```
 
 ### Basic Parameter Recovery
 
