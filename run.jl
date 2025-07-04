@@ -1,3 +1,4 @@
+using Pkg
 Pkg.instantiate()
 
 # Load the simulator

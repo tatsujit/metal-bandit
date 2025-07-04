@@ -231,7 +231,7 @@ end
 # 実際の使用例
 function run_apple_silicon_benchmark()
     println("Apple Silicon GPU 並列化バンディット問題MLE")
-    println("=" * 50)
+    println("=" ^ 50)
 
     if Metal.functional()
         println("✓ Metal が利用可能です！")
@@ -287,7 +287,7 @@ end
 # 使用例とテスト
 function example_usage()
     println("使用例:")
-    println("=" * 30)
+    println("=" ^ 30)
 
     # 1. 簡単な例
     println("1. 基本的な使用法")

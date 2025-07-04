@@ -444,7 +444,7 @@ end
 # Main demonstration function
 function demonstrate_metal_bandit_simulator()
     println("🚀 GPU-Accelerated Bernoulli Bandit Simulator with Metal.jl")
-    println("=" * 60)
+    println("=" ^ 60)
     
     if !Metal.functional()
         println("❌ Metal not available. This demo requires Apple Silicon.")
