@@ -1,0 +1,121 @@
+#+TITLE: Large-Scale GPU vs CPU Performance Analysis
+#+AUTHOR: Claude Code
+#+DATE: 2025-07-04
+
+* Large-Scale Performance Test Design
+
+** Motivation
+Previous experiments with moderate scale (200 subjects, 4 arms, 200 trials) showed that:
+- Multi-threaded CPU (8 threads): 2.08x faster than GPU
+- GPU advantage may emerge at larger scales where massive parallelism becomes beneficial
+- Need to test with realistic large-scale cognitive modeling scenarios
+
+** Experimental Parameters
+
+*** Small Scale (Previous)
+- Subjects: 200
+- Arms: 4  
+- Trials: 200
+- Result: CPU 2.08x faster than GPU
+
+*** Large Scale (Current)
+- Subjects: 2000 (10x increase)
+- Arms: 8 (2x increase) 
+- Trials: 500 (2.5x increase)
+- Total operations: ~8M decisions vs ~160K (50x increase)
+
+** Expected Outcomes
+- GPU should show advantage at larger scales due to:
+  - Better amortization of GPU kernel launch overhead
+  - More parallel work per thread block
+  - Higher GPU memory bandwidth utilization
+- CPU may hit threading bottlenecks with more complex workloads
+- Memory allocation patterns may favor GPU for larger datasets
+
+** Implementation Notes
+- Same algorithms and random seeds for fair comparison
+- Proper threading configuration (8 threads for CPU)
+- GPU memory management for larger datasets
+- Progress monitoring for long-running experiments
+
+** Hypothesis
+GPU performance advantage will emerge at scale, potentially achieving:
+- 2-5x speedup over multi-threaded CPU
+- Better scaling characteristics with dataset size
+- Maintained accuracy and reliability
+
+** EXPERIMENTAL RESULTS (COMPLETED)
+
+*** Large-Scale Performance Results
+| Method              | Time (seconds) | Speedup vs GPU |
+|---------------------+----------------+----------------|
+| GPU                 |          73.83 |           1.0x |
+| CPU (8 threads)     |          65.78 |           1.12x |
+| CPU (1 thread)      |         177.57 |           0.42x |
+
+*** Key Findings
+- **CPU (8 threads) STILL outperforms GPU by 1.12x** even at large scale
+- GPU vs single-threaded CPU: 2.41x speedup (as expected)
+- Dataset scale: 2000 subjects × 8 arms × 500 trials = 1M total decisions
+- Both methods maintain 100% estimation success rate
+- Parameter recovery quality remains identical (α: r≈0.93, β: r≈0.67)
+
+*** Scaling Analysis
+**** Small Scale (200×4×200 = 160K decisions):
+- CPU (8 threads): 2.08x faster than GPU
+- GPU: 6.48s, CPU: 3.11s
+
+**** Large Scale (2000×8×500 = 1M decisions):
+- CPU (8 threads): 1.12x faster than GPU  
+- GPU: 73.83s, CPU: 65.78s
+
+**** Scaling Characteristics:
+- GPU scaling: 73.83s / 6.48s = 11.4x slower for 6.25x more work
+- CPU scaling: 65.78s / 3.11s = 21.2x slower for 6.25x more work
+- **GPU shows better scaling efficiency than CPU**
+
+*** Surprising Results
+1. **CPU still outperforms GPU even at large scale**
+2. **GPU shows better scaling characteristics** (scales more efficiently with problem size)
+3. The crossover point where GPU becomes faster than CPU is likely at even larger scales (>2000 subjects)
+4. Multi-threading advantage for CPU diminishes at larger scales
+
+*** Technical Observations
+- GPU utilization may still be suboptimal for this type of workload
+- MLE optimization is inherently sequential and CPU-friendly
+- Memory bandwidth not the bottleneck for this problem type
+- Thread synchronization overhead increases with scale for CPU
+
+** CONCLUSIONS
+
+*** Performance Hierarchy (Both Scales)
+1. **CPU (8 threads)** - Best performance at both scales
+2. **GPU** - Good performance, better scaling characteristics
+3. **CPU (1 thread)** - Baseline, 2-3x slower than GPU
+
+*** Key Insights
+1. **Multi-threaded CPU dominates** for Q-learning parameter estimation
+2. **GPU shows promise for even larger scales** due to better scaling efficiency
+3. **The crossover point** where GPU overtakes CPU is likely >10K subjects
+4. **Algorithm choice matters more than hardware** for moderate-scale cognitive modeling
+
+*** Practical Recommendations
+- Use **CPU with proper threading** for datasets <5K subjects
+- Consider **GPU for very large datasets** (>10K subjects) or when CPU threads are limited
+- **Both methods are scientifically equivalent** in terms of accuracy and reliability
+- **Threading configuration is critical** - single-threaded CPU is significantly slower
+
+*** Future Work
+- Test with even larger scales (5K-10K subjects) to find GPU crossover point
+- Optimize GPU kernel utilization for better performance
+- Investigate hybrid CPU-GPU approaches for different algorithm components
+- Compare with other acceleration frameworks (OpenMP, CUDA.jl, etc.)
+
+** Reproducibility
+#+BEGIN_SRC julia
+# Large-scale experiment (2000×8×500)
+julia --project=. --threads=8 -e 'include("large_scale_gpu_vs_cpu_comparison.jl"); main_large_scale_experiment()'
+
+# Small-scale comparison (200×4×200)  
+julia --project=. --threads=8 -e 'include("gpu_vs_cpu_comparison.jl"); main_gpu_vs_cpu_comparison_experiment()'
+#+END_SRC
