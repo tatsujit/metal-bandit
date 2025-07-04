@@ -1,5 +1,5 @@
-using Pkg
-Pkg.instantiate()
+# using Pkg
+# Pkg.instantiate()
 
 # Load the simulator
 include("metal_bandit_simulator.jl")
@@ -11,7 +11,7 @@ result = demonstrate_metal_bandit_simulator()
 env = MetalBernoulliEnvironment(8, 2000, 500)  # 8 arms, 2000 trials, 500 agents
 agent = MetalQLearningAgent(8, 500, 2000; alpha=0.1f0, beta=3.0f0)
 
-# Run simulation
+
 run_metal_bandit_simulation!(env, agent)
 
 # Estimate parameters with GPU acceleration
