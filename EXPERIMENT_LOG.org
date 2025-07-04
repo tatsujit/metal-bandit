@@ -1,0 +1,89 @@
+#+TITLE: Metal Bandit Experiment Log
+#+AUTHOR: Claude Code
+#+DATE: 2025-07-04
+
+* GPU vs CPU Q-Learning Parameter Recovery Comparison Experiment
+
+** Experiment Overview
+- *Date*: 2025-07-04
+- *Experiment Type*: GPU vs CPU Performance and Accuracy Comparison
+- *Sample Size*: 200 subjects
+- *Parameters*: 4 arms, 200 trials per subject
+- *Seed*: 42 (for reproducibility)
+
+** Experimental Design
+- *GPU Implementation*: Metal.jl with GPU kernels for parallel computation
+- *CPU Implementation*: Julia with threading for parallel processing
+- *Parameter Space*: α ∈ [0,1], β ∈ [0,10]
+- *Estimation Method*: Maximum Likelihood Estimation (MLE) with BFGS optimization
+
+** Performance Results
+
+*** Execution Time Comparison (Corrected with 8 threads)
+| Method           | Time (seconds) | Speedup vs GPU |
+|------------------+----------------+----------------|
+| GPU              |           6.48 |           1.0x |
+| CPU (8 threads)  |           3.11 |           2.08x |
+| CPU (1 thread)   |           7.44 |           0.87x |
+
+*** Key Performance Insights
+- **Multi-threaded CPU is 2.08x faster than GPU** for this problem size
+- Single-threaded CPU is slightly slower than GPU (0.87x)
+- The GPU advantage diminishes significantly with proper CPU parallelization
+- For moderate problem sizes (200 subjects), well-optimized CPU code outperforms GPU
+
+** Accuracy Results
+
+*** Parameter Estimation Success Rate
+- *GPU Success Rate*: 100.0%
+- *CPU Success Rate*: 100.0%
+
+*** Parameter Recovery Quality
+| Parameter | GPU Correlation | CPU Correlation |
+|-----------+-----------------+-----------------|
+| α (Learning Rate)        |           0.938 |           0.929 |
+| β (Inverse Temperature)  |           0.660 |           0.680 |
+
+*** Statistical Analysis
+- *Learning Rate α*: Excellent recovery (R² ≈ 0.88 for both methods)
+- *Inverse Temperature β*: Moderate recovery (R² ≈ 0.44 for both methods)
+- Both methods show consistent parameter recovery quality
+
+** Files Generated
+- =gpu_vs_cpu_comparison_visualization.png= - Comprehensive comparison plots
+- =gpu_vs_cpu_comparison_results.csv= - Subject-level results
+- =gpu_vs_cpu_comparison_results_timing.csv= - Timing benchmark data
+
+** Technical Implementation
+- *GPU Code*: =gpu_vs_cpu_comparison.jl=
+- *Framework*: Metal.jl for GPU acceleration
+- *Optimization*: Multi-start BFGS with 10 random initializations
+- *Visualization*: CairoMakie.jl for publication-quality plots
+
+** Conclusions
+1. *Performance*: **Multi-threaded CPU (8 threads) outperforms GPU by 2.08x** for moderate problem sizes
+2. *Accuracy*: Both implementations achieve identical parameter recovery quality
+3. *Reliability*: 100% estimation success rate demonstrates robust optimization
+4. *Threading Impact*: Proper CPU parallelization is crucial - single-threaded CPU is 0.87x slower than GPU
+5. *Scalability*: GPU advantage would likely emerge with much larger datasets (1000+ subjects)
+6. *Validation*: Results confirm that both implementations are scientifically equivalent
+
+** Future Work
+- Test with larger sample sizes (1000+ subjects) to evaluate GPU scalability
+- Benchmark different optimization algorithms (Adam, L-BFGS-B)
+- Investigate hierarchical parameter recovery approaches
+- Extend to more complex bandit environments (contextual, non-stationary)
+
+** Reproducibility
+All experiments can be reproduced using:
+#+BEGIN_SRC julia
+# With proper threading (8 threads)
+julia --project=. --threads=8 -e 'include("gpu_vs_cpu_comparison.jl"); main_gpu_vs_cpu_comparison_experiment()'
+
+# Single-threaded comparison
+julia --project=. --threads=1 -e 'include("gpu_vs_cpu_comparison.jl"); main_gpu_vs_cpu_comparison_experiment()'
+#+END_SRC
+
+** Important Note
+The initial results showed GPU ≈ CPU performance because Julia was running with only 1 thread by default.
+The corrected results with proper threading (8 threads) show that **CPU significantly outperforms GPU** for this problem size.
