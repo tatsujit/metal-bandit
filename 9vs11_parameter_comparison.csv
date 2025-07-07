@@ -1,0 +1,10 @@
+Parameter,Description,Correlation_11param,Correlation_9param,Improvement,Status
+τ,Exploration parameter,0.525,0.525,0.0,🟢
+φ,Value scale,0.406,0.406,0.0,🟢
+ν,Perseveration inverse temp,0.306,0.306,0.0,🟢
+η,Perseveration learning,0.163,0.196,20.0,🟡
+β,Inverse temperature,0.188,0.188,0.0,🟡
+αm,Memory decay,0.043,0.064,50.0,🟠
+α,Learning rate,0.036,0.054,50.0,🟠
+αf,Forgetting rate,0.03,0.039,30.0,🟠
+μ,Utility weight,0.023,0.025,10.0,🟠
